@@ -1,4 +1,6 @@
-data/raw/
+.DS_Store
+data/raw/*
+!data/raw/manifest.json
 data/processed/
 .venv/
 __pycache__/
