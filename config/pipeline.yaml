@@ -1,0 +1,61 @@
+# Baseline ablation row: fixed-size chunks, dense-only retrieval, no rerank.
+# Every experiment knob lives in this file. A new ablation row is a new YAML
+# in config/ (copy this file, change knobs) -- never a code branch.
+experiment:
+  name: baseline_fixed_dense
+  description: Fixed-size token chunks, BGE dense retrieval only, no reranking.
+
+corpus:
+  manifest: data/raw/manifest.json
+  raw_dir: data/raw
+  processed_dir: data/processed
+
+ingest:
+  parser: pymupdf              # pymupdf (flat text) | pymupdf4llm (structure-aware markdown)
+  chunking:
+    strategy: fixed            # fixed | structure
+    chunk_tokens: 512
+    overlap_tokens: 64
+    tokenizer: BAAI/bge-base-en-v1.5   # count tokens with the embedder's tokenizer
+
+index:
+  embedding:
+    model: BAAI/bge-base-en-v1.5
+    normalize: true
+    batch_size: 32
+    device: auto               # auto | cpu | mps | cuda
+  faiss:
+    index_type: flat_ip        # exact inner product; corpus is small enough
+  bm25:
+    enabled: false
+    k1: 1.5
+    b: 0.75
+
+retrieve:
+  mode: dense                  # dense | sparse | hybrid
+  top_k: 10
+  candidate_k: 50              # per-retriever depth before fusion / rerank
+  fusion:
+    method: rrf
+    rrf_k: 60
+  rerank:
+    enabled: false
+    model: BAAI/bge-reranker-base
+    top_n: 10
+
+generate:
+  provider: anthropic
+  model: claude-sonnet-4-6
+  max_tokens: 4096
+  effort: medium               # output_config.effort; thinking is adaptive by default
+  cite_chunks: true
+  abstain_if_no_evidence: true
+
+eval:
+  golden_set: eval/golden_set.jsonl
+  results_dir: eval/results
+  k_values: [1, 3, 5, 10]
+  ragas:
+    enabled: false
+    metrics: [faithfulness, answer_relevancy, context_precision, context_recall]
+  seed: 0
