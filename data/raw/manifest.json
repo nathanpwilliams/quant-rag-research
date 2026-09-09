@@ -1,6 +1,6 @@
 {
   "corpus_version": "0.1.0",
-  "updated": "2026-08-23",
+  "updated": "2026-09-09",
   "notes": "doc_id values here are the canonical IDs referenced by eval/golden_set.jsonl gold_evidence entries. PDFs live in data/raw/ (gitignored); this manifest IS committed. status: to_download -> downloaded -> ingested.",
   "documents": [
     {
@@ -11,9 +11,18 @@
       "source_type": "arxiv",
       "arxiv_id": "1706.10059",
       "url": "https://arxiv.org/abs/1706.10059",
-      "tags": ["rl-trading", "portfolio", "eiie"],
+      "tags": [
+        "rl-trading",
+        "portfolio",
+        "eiie"
+      ],
       "role": "Portfolio-side anchor; gold source for q001 and q007",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_1706.10059.pdf",
+      "sha256": "77bb80866c02b865137aa09ed7a1b31c981e55aa459bbcfa8a3a1f4b91fac811",
+      "arxiv_version": 2,
+      "arxiv_title": "A Deep Reinforcement Learning Framework for the Financial Portfolio Management Problem",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_2004.06627",
@@ -23,9 +32,19 @@
       "source_type": "arxiv",
       "arxiv_id": "2004.06627",
       "url": "https://arxiv.org/abs/2004.06627",
-      "tags": ["rl-trading", "single-asset", "dqn", "tdqn"],
+      "tags": [
+        "rl-trading",
+        "single-asset",
+        "dqn",
+        "tdqn"
+      ],
       "role": "Single-asset DQN-family anchor (TDQN, Sharpe-maximizing); candidate gold source for q002/q003/q007",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_2004.06627.pdf",
+      "sha256": "a5fd46feecdca1be7c580db36a3a7f77ae19a21ca4c33206235ac15fec7ea633",
+      "arxiv_version": 3,
+      "arxiv_title": "An Application of Deep Reinforcement Learning to Algorithmic Trading",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_1911.10107",
@@ -35,9 +54,18 @@
       "source_type": "arxiv",
       "arxiv_id": "1911.10107",
       "url": "https://arxiv.org/abs/1911.10107",
-      "tags": ["rl-trading", "single-asset", "volatility-scaling"],
+      "tags": [
+        "rl-trading",
+        "single-asset",
+        "volatility-scaling"
+      ],
       "role": "Continuous futures, volatility-scaled reward; strong q005 reward-formulation contrast",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_1911.10107.pdf",
+      "sha256": "5738aaa632526b11be01178b7ef966986d3d0cbe1ea3f3620be06bfc96fc261c",
+      "arxiv_version": 1,
+      "arxiv_title": "Deep Reinforcement Learning for Trading",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_2511.12120",
@@ -47,9 +75,19 @@
       "source_type": "arxiv",
       "arxiv_id": "2511.12120",
       "url": "https://arxiv.org/abs/2511.12120",
-      "tags": ["rl-trading", "portfolio", "ppo", "ensemble"],
+      "tags": [
+        "rl-trading",
+        "portfolio",
+        "ppo",
+        "ensemble"
+      ],
       "role": "ICAIF 2020 classic (arXiv posting Nov 2025); PPO/A2C/DDPG ensemble; gold candidate for q005/q006/q008",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_2511.12120.pdf",
+      "sha256": "b5dab7bbc60e1366eeb392086641cc38e5884f3abbf33192fa014685579ffb95",
+      "arxiv_version": 1,
+      "arxiv_title": "Deep Reinforcement Learning for Automated Stock Trading: An Ensemble Strategy",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_2011.09607",
@@ -59,9 +97,18 @@
       "source_type": "arxiv",
       "arxiv_id": "2011.09607",
       "url": "https://arxiv.org/abs/2011.09607",
-      "tags": ["rl-trading", "library", "framework"],
+      "tags": [
+        "rl-trading",
+        "library",
+        "framework"
+      ],
       "role": "Framework/tooling perspective; transaction-cost handling described at library level",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_2011.09607.pdf",
+      "sha256": "bcb8810089c98dab432a6fed9b6c674f0f10f737e73071f7e91eef26daeba5c6",
+      "arxiv_version": 2,
+      "arxiv_title": "FinRL: A Deep Reinforcement Learning Library for Automated Stock Trading in Quantitative Finance",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_2112.06753",
@@ -71,9 +118,19 @@
       "source_type": "arxiv",
       "arxiv_id": "2112.06753",
       "url": "https://arxiv.org/abs/2112.06753",
-      "tags": ["rl-trading", "library", "environments", "benchmarks"],
+      "tags": [
+        "rl-trading",
+        "library",
+        "environments",
+        "benchmarks"
+      ],
       "role": "Environment/benchmark design; near-duplicate vocabulary overlap with FinRL (planted dedup/disambiguation stress)",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_2112.06753.pdf",
+      "sha256": "d9a9f449f42ccca8992522643f14367ed603724cbdf91b79f7ee9b5efbb33841",
+      "arxiv_version": 2,
+      "arxiv_title": "FinRL-Meta: A Universe of Near-Real Market Environments for Data-Driven Deep Reinforcement Learning in Quantitative Finance",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_1811.07522",
@@ -83,9 +140,18 @@
       "source_type": "arxiv",
       "arxiv_id": "1811.07522",
       "url": "https://arxiv.org/abs/1811.07522",
-      "tags": ["rl-trading", "portfolio", "ddpg"],
+      "tags": [
+        "rl-trading",
+        "portfolio",
+        "ddpg"
+      ],
       "role": "Earlier sibling of the ensemble paper (near-duplicate author group; planted disambiguation stress)",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_1811.07522.pdf",
+      "sha256": "6ac6deaa6503ce96368d30cb90928509145a0b5a34c5259ef400c1f5518130f7",
+      "arxiv_version": 3,
+      "arxiv_title": "Practical Deep Reinforcement Learning Approach for Stock Trading",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_1808.09940",
@@ -95,9 +161,18 @@
       "source_type": "arxiv",
       "arxiv_id": "1808.09940",
       "url": "https://arxiv.org/abs/1808.09940",
-      "tags": ["rl-trading", "portfolio", "adversarial"],
+      "tags": [
+        "rl-trading",
+        "portfolio",
+        "adversarial"
+      ],
       "role": "Portfolio management with adversarial training; DDPG/PPO comparisons for q005",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_1808.09940.pdf",
+      "sha256": "758d266d1c5c20f5137b8a5def3d71968b58a3bcc960e89e838e7623910fe58c",
+      "arxiv_version": 3,
+      "arxiv_title": "Adversarial Deep Reinforcement Learning in Portfolio Management",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_1707.06347",
@@ -107,9 +182,17 @@
       "source_type": "arxiv",
       "arxiv_id": "1707.06347",
       "url": "https://arxiv.org/abs/1707.06347",
-      "tags": ["rl-core", "ppo"],
+      "tags": [
+        "rl-core",
+        "ppo"
+      ],
       "role": "RL foundations; lets lookup questions distinguish 'the PPO paper' from 'papers that use PPO'",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_1707.06347.pdf",
+      "sha256": "e78feadadbdbb0b601b3c2bcc81404722cd431a489b307545f9b7bea1e8c4f5b",
+      "arxiv_version": 2,
+      "arxiv_title": "Proximal Policy Optimization Algorithms",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_1312.5602",
@@ -119,9 +202,17 @@
       "source_type": "arxiv",
       "arxiv_id": "1312.5602",
       "url": "https://arxiv.org/abs/1312.5602",
-      "tags": ["rl-core", "dqn"],
+      "tags": [
+        "rl-core",
+        "dqn"
+      ],
       "role": "RL foundations; DQN origin for lineage questions",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_1312.5602.pdf",
+      "sha256": "8db04120cace173151c77e0faa6f3eaa4207009da66b9417597dc70bfee56d9c",
+      "arxiv_version": 1,
+      "arxiv_title": "Playing Atari with Deep Reinforcement Learning",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_2106.00123",
@@ -131,9 +222,17 @@
       "source_type": "arxiv",
       "arxiv_id": "2106.00123",
       "url": "https://arxiv.org/abs/2106.00123",
-      "tags": ["survey", "rl-trading"],
+      "tags": [
+        "survey",
+        "rl-trading"
+      ],
       "role": "Survey coverage; surveys mention everything, so they stress retrieval precision (retrieving the survey instead of the primary source is a soft failure worth observing)",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_2106.00123.pdf",
+      "sha256": "890b26807e628b11221102edbd5bba0f51ee3524f4ac1b45c94544454c084505",
+      "arxiv_version": 1,
+      "arxiv_title": "Deep Reinforcement Learning in Quantitative Algorithmic Trading: A Review",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_2411.12746",
@@ -143,9 +242,17 @@
       "source_type": "arxiv",
       "arxiv_id": "2411.12746",
       "url": "https://arxiv.org/abs/2411.12746",
-      "tags": ["survey", "rl-finance"],
+      "tags": [
+        "survey",
+        "rl-finance"
+      ],
       "role": "Recent survey; broader financial-applications coverage incl. market making and execution",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_2411.12746.pdf",
+      "sha256": "0c65fd5747aeba78a22d3c8f7cdcc67f97cfb0327e32e669a36ab696b3eb47f8",
+      "arxiv_version": 1,
+      "arxiv_title": "A Review of Reinforcement Learning in Financial Applications",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_2003.01820",
@@ -155,9 +262,18 @@
       "source_type": "arxiv",
       "arxiv_id": "2003.01820",
       "url": "https://arxiv.org/abs/2003.01820",
-      "tags": ["market-making", "microstructure", "adversarial"],
+      "tags": [
+        "market-making",
+        "microstructure",
+        "adversarial"
+      ],
       "role": "Market-making corner of the corpus; off-distribution from trading papers to test retrieval precision",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_2003.01820.pdf",
+      "sha256": "b263d1df1bba916d5a4219c2e9e1470a876f5b37a884cbc29d2f29e9389c9159",
+      "arxiv_version": 2,
+      "arxiv_title": "Robust Market Making via Adversarial Reinforcement Learning",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_2101.07107",
@@ -167,9 +283,19 @@
       "source_type": "arxiv",
       "arxiv_id": "2101.07107",
       "url": "https://arxiv.org/abs/2101.07107",
-      "tags": ["rl-trading", "hft", "microstructure", "ppo"],
+      "tags": [
+        "rl-trading",
+        "hft",
+        "microstructure",
+        "ppo"
+      ],
       "role": "LOB-state PPO agent; bridges trading and microstructure clusters; q005/q007 candidate",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_2101.07107.pdf",
+      "sha256": "1d78e8b53218380cf6712a186d4df4b9707d8ebe96275c69ac29f2b119fcd96e",
+      "arxiv_version": 3,
+      "arxiv_title": "Deep Reinforcement Learning for Active High Frequency Trading",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_1808.03668",
@@ -179,9 +305,18 @@
       "source_type": "arxiv",
       "arxiv_id": "1808.03668",
       "url": "https://arxiv.org/abs/1808.03668",
-      "tags": ["microstructure", "deep-learning", "lob"],
+      "tags": [
+        "microstructure",
+        "deep-learning",
+        "lob"
+      ],
       "role": "Microstructure/supervised contrast to the RL papers; ID from memory - confirm title on download and fix arxiv_id here if it 404s",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_1808.03668.pdf",
+      "sha256": "f50d57a80644ac427433824b540c9bc713ffd2249c2042ba975d986078295913",
+      "arxiv_version": 6,
+      "arxiv_title": "DeepLOB: Deep Convolutional Neural Networks for Limit Order Books",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "arxiv_1803.06917",
@@ -191,9 +326,17 @@
       "source_type": "arxiv",
       "arxiv_id": "1803.06917",
       "url": "https://arxiv.org/abs/1803.06917",
-      "tags": ["microstructure", "price-formation"],
+      "tags": [
+        "microstructure",
+        "price-formation"
+      ],
       "role": "Microstructure anchor; ID from memory - confirm title on download and fix arxiv_id here if it 404s",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/arxiv_1803.06917.pdf",
+      "sha256": "8ae07ac2ae3bd803210f36acfca5a4ceb298acdd1b8f9a9d44a036822dd964fd",
+      "arxiv_version": 1,
+      "arxiv_title": "Universal features of price formation in financial markets: perspectives from Deep Learning",
+      "downloaded_at": "2026-09-09"
     },
     {
       "doc_id": "web_pseudomath_charlatanism",
@@ -203,7 +346,10 @@
       "source_type": "web",
       "arxiv_id": null,
       "url": "TODO: locate the free PDF (published in Notices of the AMS, May 2014; search 'Pseudo-Mathematics and Financial Charlatanism Notices AMS pdf')",
-      "tags": ["methodology", "backtest-overfitting"],
+      "tags": [
+        "methodology",
+        "backtest-overfitting"
+      ],
       "role": "Methodology anchor for q006 (backtest overfitting); the Lopez de Prado-school source",
       "status": "to_download"
     },
@@ -215,7 +361,11 @@
       "source_type": "note",
       "arxiv_id": null,
       "url": null,
-      "tags": ["methodology", "labeling", "cross-validation"],
+      "tags": [
+        "methodology",
+        "labeling",
+        "cross-validation"
+      ],
       "role": "REQUIRED for q004 and q009 gold sources: write your own markdown summary notes (do not commit book scans); your notes are legitimate corpus documents",
       "status": "to_write"
     },
@@ -227,7 +377,11 @@
       "source_type": "note",
       "arxiv_id": null,
       "url": null,
-      "tags": ["alphapulse", "mdp", "reward-design"],
+      "tags": [
+        "alphapulse",
+        "mdp",
+        "reward-design"
+      ],
       "role": "Own-notes corpus member; informal prose stresses chunking differently than LaTeX PDFs",
       "status": "to_write"
     },
@@ -239,7 +393,11 @@
       "source_type": "note",
       "arxiv_id": null,
       "url": null,
-      "tags": ["alphapulse", "backtest", "methodology"],
+      "tags": [
+        "alphapulse",
+        "backtest",
+        "methodology"
+      ],
       "role": "Own-notes corpus member; enables corpus-vs-own-practice comparison questions in the full golden set",
       "status": "to_write"
     },
@@ -251,7 +409,10 @@
       "source_type": "note",
       "arxiv_id": null,
       "url": null,
-      "tags": ["alphapulse", "lessons"],
+      "tags": [
+        "alphapulse",
+        "lessons"
+      ],
       "role": "Own-notes corpus member; unique content with zero overlap with papers (clean retrieval-precision probe)",
       "status": "to_write"
     }
