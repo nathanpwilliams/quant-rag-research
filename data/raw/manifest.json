@@ -345,13 +345,17 @@
       "year": 2014,
       "source_type": "web",
       "arxiv_id": null,
-      "url": "TODO: locate the free PDF (published in Notices of the AMS, May 2014; search 'Pseudo-Mathematics and Financial Charlatanism Notices AMS pdf')",
+      "url": "https://www.davidhbailey.com/dhbpapers/backtest-pseudo.pdf",
       "tags": [
         "methodology",
         "backtest-overfitting"
       ],
       "role": "Methodology anchor for q006 (backtest overfitting); the Lopez de Prado-school source",
-      "status": "to_download"
+      "status": "downloaded",
+      "file": "data/raw/web_pseudomath_charlatanism.pdf",
+      "sha256": "6e790c4185bf393272f89af5a2668b6b12203aa87fa7d5914fbeadc7c9ba0f3e",
+      "downloaded_at": "2026-09-09",
+      "source_note": "Author-hosted preprint (dated April 1, 2014; 34 pp.), not the typeset Notices of the AMS layout. The AMS URL https://www.ams.org/notices/201405/rnoti-p458.pdf returns HTTP 403 to non-browser clients."
     },
     {
       "doc_id": "note_afml_labeling",
