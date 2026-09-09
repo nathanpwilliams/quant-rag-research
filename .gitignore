@@ -4,3 +4,7 @@ data/raw/*
 data/processed/
 .venv/
 __pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
