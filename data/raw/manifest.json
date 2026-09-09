@@ -371,7 +371,11 @@
         "cross-validation"
       ],
       "role": "REQUIRED for q004 and q009 gold sources: write your own markdown summary notes (do not commit book scans); your notes are legitimate corpus documents",
-      "status": "to_write"
+      "status": "downloaded",
+      "file": "data/raw/note_afml_labeling.md",
+      "sha256": "cf1ec780da04274fe047f56b872b432b6b7b34354fb211de31be52d5a65b6aee",
+      "downloaded_at": "2026-09-09",
+      "source_note": "Original explainer drafted 2026-09-09 by Claude Code for owner review; pending sign-off before eval results depend on it."
     },
     {
       "doc_id": "note_alphapulse_mdp",
