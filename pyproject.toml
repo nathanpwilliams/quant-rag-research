@@ -8,7 +8,10 @@ license = { text = "MIT" }
 authors = [{ name = "Nathan Williams" }]
 # Runtime deps are added deliberately, one PR at a time (see CLAUDE.md rule 5).
 # The corpus downloader is stdlib-only so it runs before any of them exist.
-dependencies = []
+dependencies = [
+    "pymupdf>=1.28.2",
+    "pyyaml>=6.0.3",
+]
 
 [project.scripts]
 quant-rag = "quant_rag.cli:main"
