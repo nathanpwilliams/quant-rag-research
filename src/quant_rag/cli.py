@@ -7,6 +7,7 @@ import sys
 
 from quant_rag import __version__
 from quant_rag.ingest import download
+from quant_rag.ingest import run as ingest
 
 
 def _not_implemented(stage: str) -> int:
@@ -22,6 +23,10 @@ def build_parser() -> argparse.ArgumentParser:
     dl = sub.add_parser("download", help="fetch arXiv PDFs listed in the manifest")
     download.add_arguments(dl)
     dl.set_defaults(func=download.run)
+
+    ing = sub.add_parser("ingest", help="parse the corpus and build chunks")
+    ingest.add_arguments(ing)
+    ing.set_defaults(func=ingest.run)
 
     ask = sub.add_parser("ask", help="retrieve + answer a question over the corpus")
     ask.add_argument("question")
