@@ -1,6 +1,7 @@
 .DS_Store
 data/raw/*
 !data/raw/manifest.json
+!data/raw/note_*.md
 data/processed/
 .venv/
 __pycache__/

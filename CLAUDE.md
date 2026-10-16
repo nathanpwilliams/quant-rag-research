@@ -35,7 +35,8 @@ then RAGAS metrics.
    human-annotated by design; a model filling it in invalidates the eval. Adding
    schema-level tooling (validation script) is fine; touching annotation content is not.
 2. Never commit anything under `data/raw/` or `data/processed/` except
-   `data/raw/manifest.json`.
+   `data/raw/manifest.json` and authored `note_*.md` documents (original written
+   content, part of the reproducible corpus).
 3. Config-driven experiments only: a new ablation row = a new YAML file in `config/`,
    never a code branch or commented-out block.
 4. Eval results are append-only: new runs add CSVs under `eval/results/`; never
