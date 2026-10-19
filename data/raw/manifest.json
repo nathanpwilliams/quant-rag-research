@@ -1,6 +1,6 @@
 {
   "corpus_version": "0.1.0",
-  "updated": "2026-09-09",
+  "updated": "2026-10-19",
   "notes": "doc_id values here are the canonical IDs referenced by eval/golden_set.jsonl gold_evidence entries. PDFs live in data/raw/ (gitignored); this manifest IS committed. status: to_download -> downloaded -> ingested.",
   "documents": [
     {
@@ -376,53 +376,6 @@
       "sha256": "cf1ec780da04274fe047f56b872b432b6b7b34354fb211de31be52d5a65b6aee",
       "downloaded_at": "2026-09-09",
       "source_note": "Original explainer drafted 2026-09-09 by Claude Code for owner review; reviewed and signed off by the owner 2026-10-15 with no content changes (sha256 unchanged from the drafted version). Cleared for eval results to depend on it."
-    },
-    {
-      "doc_id": "note_alphapulse_mdp",
-      "title": "AlphaPulse notes: MDP formulation, state/action/reward design",
-      "authors": "Nathan",
-      "year": 2026,
-      "source_type": "note",
-      "arxiv_id": null,
-      "url": null,
-      "tags": [
-        "alphapulse",
-        "mdp",
-        "reward-design"
-      ],
-      "role": "Own-notes corpus member; informal prose stresses chunking differently than LaTeX PDFs",
-      "status": "to_write"
-    },
-    {
-      "doc_id": "note_alphapulse_backtest",
-      "title": "AlphaPulse notes: backtest setup, walk-forward split, transaction cost assumptions",
-      "authors": "Nathan",
-      "year": 2026,
-      "source_type": "note",
-      "arxiv_id": null,
-      "url": null,
-      "tags": [
-        "alphapulse",
-        "backtest",
-        "methodology"
-      ],
-      "role": "Own-notes corpus member; enables corpus-vs-own-practice comparison questions in the full golden set",
-      "status": "to_write"
-    },
-    {
-      "doc_id": "note_alphapulse_lessons",
-      "title": "AlphaPulse notes: failure modes and lessons learned on Kraken Futures testnet",
-      "authors": "Nathan",
-      "year": 2026,
-      "source_type": "note",
-      "arxiv_id": null,
-      "url": null,
-      "tags": [
-        "alphapulse",
-        "lessons"
-      ],
-      "role": "Own-notes corpus member; unique content with zero overlap with papers (clean retrieval-precision probe)",
-      "status": "to_write"
     }
   ]
 }

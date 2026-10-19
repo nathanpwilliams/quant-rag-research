@@ -3,11 +3,10 @@
 **Status (Oct 2026): in progress.** Corpus ingestion is complete — 18
 provenance-verified sources (SHA-256 recorded for each; the 16 arXiv papers
 title-checked against the arXiv API), PyMuPDF parsing, and config-driven
-chunking (fixed and structure-aware). Indexing and dense retrieval now work
-end to end: BGE embeddings over the active chunk set, exact cosine search, and
-the `quant-rag index` / `quant-rag ask` commands — 125 passing tests. Three
-further own-notes documents are registered in the manifest but not yet written
-(they currently index as empty templates). Planned: a 4-row retrieval ablation
+chunking (fixed and structure-aware), yielding 459 chunks with no parse-quality
+flags. Indexing and dense retrieval work end to end: BGE embeddings over the
+active chunk set, exact cosine search, and the `quant-rag index` / `quant-rag
+ask` commands, with 130 passing tests. Planned: a 4-row retrieval ablation
 (recall@k, MRR, faithfulness) against a human-annotated golden set.
 
 Eval-centric RAG methodology study over a small RL / quant-finance paper corpus.
@@ -47,8 +46,8 @@ no answer generation yet.
 
 ## Design decisions
 
-**`exact_numpy` is the default search backend, not FAISS.** The corpus is 461
-chunks of 768 float32 — a 1.4 MB matrix. A query is one `(1,768) @ (768,461)`
+**`exact_numpy` is the default search backend, not FAISS.** The corpus is 459
+chunks of 768 float32 — a 1.4 MB matrix. A query is one `(1,768) @ (768,459)`
 matmul: ~350k multiply-adds, microseconds under BLAS, with no index structure to
 build, tune, or persist. FAISS earns its complexity on approximate search over
 millions of vectors; at this scale `IndexFlatIP` performs the identical
@@ -80,12 +79,21 @@ after `transformers` became importable silently moves every chunk boundary under
 an unchanged fingerprint. `index.json` therefore also records the SHA-256 of
 `chunks.jsonl`, and loading re-hashes and refuses on mismatch.
 
-**Chunks are truncated by 1-3 tokens and the build says so.** BGE's 512-token
-window counts `[CLS]` and `[SEP]`, so `chunk_tokens: 512` of content does not
-fit: 440 of 461 chunks lose up to 3 tokens off the end. The loss is tiny and at a
-chunk tail, but it is measured, recorded in `index.json`, and printed as a
-warning rather than left implicit. Setting `chunk_tokens: 510` would eliminate it
-at the cost of a re-ingest and a new fingerprint.
+**`chunk_tokens: 510`, because the window includes the special tokens.** BGE's
+512-token window counts `[CLS]` and `[SEP]`, so the content budget is 512 - 2.
+At 512 the encoder silently truncated 95% of chunk tails — doubly bad given
+BGE pools on CLS, which already underweights tails.
+
+Dropping to 510 left 2 chunks still overflowing by 1 token, for a separate
+reason worth knowing: windowing counted tokens *in document context*, but the
+encoder is handed the isolated slice. A window opening mid-word carries a
+fragment, and WordPiece splits a fragment into more pieces alone than it
+contributed inside the whole word — the tail of "statistic" is one token in
+context and two as a bare "istic". `ingest.chunk.fit_to_budget` now measures the
+slice that will actually be embedded and shrinks it to fit, so `n_tokens` is
+truthful (it is recorded per chunk and read back by the eval) and the build
+reports `no truncation`. `quant-rag index` still warns if that ever stops
+holding.
 
 **BGE's query instruction is a knob, not a constant.** The model card specifies
 `"Represent this sentence for searching relevant passages: "` for queries and
