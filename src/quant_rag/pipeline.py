@@ -14,7 +14,9 @@ Stage status:
   that chunk set and writes a FAISS index keyed by
   :meth:`quant_rag.config.PipelineConfig.index_fingerprint`, which has the
   ingest fingerprint as an input so the two cannot drift apart.
-* ``retrieve``, ``generate`` -- not implemented yet.
+* ``retrieve`` -- dense only: :class:`quant_rag.retrieve.dense.DenseRetriever`.
+  ``sparse``/``hybrid`` modes and reranking are not implemented.
+* ``generate`` -- not implemented yet; ``quant-rag ask`` prints chunks.
 """
 
 from __future__ import annotations
@@ -22,12 +24,16 @@ from __future__ import annotations
 from quant_rag.config import PipelineConfig, load_config
 from quant_rag.index.store import LoadedIndex, build_index, load_index
 from quant_rag.ingest.run import IngestReport, ingest_corpus
+from quant_rag.retrieve.dense import DenseRetriever, Hit, build_retriever
 
 __all__ = [
+    "DenseRetriever",
+    "Hit",
     "IngestReport",
     "LoadedIndex",
     "PipelineConfig",
     "build_index",
+    "build_retriever",
     "ingest_corpus",
     "load_config",
     "load_index",

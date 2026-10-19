@@ -9,6 +9,7 @@ from quant_rag import __version__
 from quant_rag.index import run as index
 from quant_rag.ingest import download
 from quant_rag.ingest import run as ingest
+from quant_rag.retrieve import ask as ask_cmd
 
 
 def _not_implemented(stage: str) -> int:
@@ -33,10 +34,9 @@ def build_parser() -> argparse.ArgumentParser:
     index.add_arguments(idx)
     idx.set_defaults(func=index.run)
 
-    ask = sub.add_parser("ask", help="retrieve + answer a question over the corpus")
-    ask.add_argument("question")
-    ask.add_argument("--config", default="config/pipeline.yaml")
-    ask.set_defaults(func=lambda args: _not_implemented("ask"))
+    ask = sub.add_parser("ask", help="retrieve chunks for a question (no generation yet)")
+    ask_cmd.add_arguments(ask)
+    ask.set_defaults(func=ask_cmd.run)
 
     ev = sub.add_parser("eval", help="run the golden-set evaluation")
     ev.add_argument("--config", default="config/pipeline.yaml")
