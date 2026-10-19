@@ -10,12 +10,25 @@ Stage status:
 * ``ingest`` -- implemented: :func:`quant_rag.ingest.run.ingest_corpus` parses
   the manifest's documents to ``data/processed/parsed/`` and writes a chunk set
   keyed by :meth:`quant_rag.config.PipelineConfig.ingest_fingerprint`.
-* ``index``, ``retrieve``, ``generate`` -- not implemented yet.
+* ``index`` -- implemented: :func:`quant_rag.index.store.build_index` embeds
+  that chunk set and writes a FAISS index keyed by
+  :meth:`quant_rag.config.PipelineConfig.index_fingerprint`, which has the
+  ingest fingerprint as an input so the two cannot drift apart.
+* ``retrieve``, ``generate`` -- not implemented yet.
 """
 
 from __future__ import annotations
 
 from quant_rag.config import PipelineConfig, load_config
+from quant_rag.index.store import LoadedIndex, build_index, load_index
 from quant_rag.ingest.run import IngestReport, ingest_corpus
 
-__all__ = ["IngestReport", "PipelineConfig", "ingest_corpus", "load_config"]
+__all__ = [
+    "IngestReport",
+    "LoadedIndex",
+    "PipelineConfig",
+    "build_index",
+    "ingest_corpus",
+    "load_config",
+    "load_index",
+]

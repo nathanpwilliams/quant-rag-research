@@ -19,12 +19,26 @@ ingest:
     tokenizer: BAAI/bge-base-en-v1.5   # count tokens with the embedder's tokenizer
 
 index:
+  # Search backend over the stored vectors. Both are exact (every chunk scored,
+  # true top-k); the choice does not change rankings, only the machinery.
+  # exact_numpy is the default -- see README "Design decisions".
+  backend: exact_numpy       # exact_numpy | faiss_flat_ip
   embedding:
     model: BAAI/bge-base-en-v1.5
-    normalize: true
+    normalize: true            # L2-normalize, so inner product == cosine
     batch_size: 32
     device: auto               # auto | cpu | mps | cuda
+    # Prepended to QUERIES ONLY, never to passages -- the BGE model card is
+    # explicit that passages get no instruction. The card lists this exact
+    # string for bge-*-v1.5 and recommends it for short-query-to-long-passage
+    # retrieval, while also saying v1.5 was trained to work without it and
+    # loses only "a slight degradation" when omitted, and that the setting
+    # should be chosen by measuring. So it is a knob: set it to "" for the
+    # no-instruction ablation row. Does not affect stored vectors, so both
+    # settings share one index.
+    query_instruction: "Represent this sentence for searching relevant passages: "
   faiss:
+    # Only read when backend == faiss_flat_ip.
     index_type: flat_ip        # exact inner product; corpus is small enough
   bm25:
     enabled: false

@@ -11,6 +11,16 @@ authors = [{ name = "Nathan Williams" }]
 dependencies = [
     "pymupdf>=1.28.2",
     "pyyaml>=6.0.3",
+    # Index stage. transformers is listed explicitly even though
+    # sentence-transformers pulls it in: ingest/tokenizer.py imports it directly
+    # for exact BGE token counts, independent of whether embedding runs.
+    "sentence-transformers>=3.0",
+    "transformers>=4.40",
+    "numpy>=1.26",
+    # Optional backend only: index.backend defaults to exact_numpy, which is
+    # what the corpus size calls for and what keeps torch's and faiss's
+    # duplicate libomp out of one process. See README "Design decisions".
+    "faiss-cpu>=1.8",
 ]
 
 [project.scripts]

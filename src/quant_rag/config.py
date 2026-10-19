@@ -30,6 +30,9 @@ DEFAULT_CONFIG_PATH = REPO_ROOT / "config" / "pipeline.yaml"
 CHUNK_STRATEGIES = frozenset({"fixed", "structure"})
 PARSERS = frozenset({"pymupdf", "pymupdf4llm"})
 RETRIEVE_MODES = frozenset({"dense", "sparse", "hybrid"})
+INDEX_TYPES = frozenset({"flat_ip"})
+INDEX_BACKENDS = frozenset({"exact_numpy", "faiss_flat_ip"})
+DEVICES = frozenset({"auto", "cpu", "mps", "cuda"})
 
 
 class ConfigError(ValueError):
@@ -56,6 +59,11 @@ def _take(data: dict[str, Any], key: str, kind: type | tuple[type, ...], path: s
     if not isinstance(value, kind):
         raise ConfigError(f"{path}.{key}: expected {kind}, got {type(value).__name__}")
     return value
+
+
+def _short_hash(payload: dict[str, Any]) -> str:
+    blob = json.dumps(payload, sort_keys=True).encode("utf-8")
+    return hashlib.sha256(blob).hexdigest()[:10]
 
 
 def _reject_unknown(data: dict[str, Any], known: tuple[str, ...], path: str) -> None:
@@ -143,20 +151,41 @@ class IngestConfig:
 
 @dataclass(frozen=True)
 class EmbeddingConfig:
+    """Embedding knobs.
+
+    ``query_instruction`` is prepended to *queries only*, never to passages --
+    that asymmetry is what the BGE model card prescribes. Because passage
+    vectors are unaffected by it, it is deliberately NOT part of
+    ``index_fingerprint()``: flipping it is a retrieval-side ablation that
+    reuses the same index rather than forcing a rebuild.
+    """
+
     model: str
     normalize: bool
     batch_size: int
     device: str
+    query_instruction: str
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> EmbeddingConfig:
         path = "index.embedding"
-        _reject_unknown(data, ("model", "normalize", "batch_size", "device"), path)
+        keys = ("model", "normalize", "batch_size", "device", "query_instruction")
+        _reject_unknown(data, keys, path)
+        batch_size = _take(data, "batch_size", int, path)
+        if batch_size <= 0:
+            raise ConfigError(f"{path}.batch_size: must be positive, got {batch_size}")
+        device = _take(data, "device", str, path)
+        if device not in DEVICES:
+            raise ConfigError(f"{path}.device: {device!r} not in {sorted(DEVICES)}")
         return cls(
             model=_take(data, "model", str, path),
             normalize=_take(data, "normalize", bool, path),
-            batch_size=_take(data, "batch_size", int, path),
-            device=_take(data, "device", str, path),
+            batch_size=batch_size,
+            device=device,
+            # Empty string means "no instruction", which is a valid setting for
+            # bge-*-v1.5 (see config/pipeline.yaml), so this knob is not
+            # required to be non-empty -- only to be present.
+            query_instruction=_take(data, "query_instruction", str, path),
         )
 
 
@@ -167,7 +196,12 @@ class FaissConfig:
     @classmethod
     def parse(cls, data: dict[str, Any]) -> FaissConfig:
         _reject_unknown(data, ("index_type",), "index.faiss")
-        return cls(index_type=_take(data, "index_type", str, "index.faiss"))
+        index_type = _take(data, "index_type", str, "index.faiss")
+        if index_type not in INDEX_TYPES:
+            raise ConfigError(
+                f"index.faiss.index_type: {index_type!r} not in {sorted(INDEX_TYPES)}"
+            )
+        return cls(index_type=index_type)
 
 
 @dataclass(frozen=True)
@@ -189,14 +223,28 @@ class BM25Config:
 
 @dataclass(frozen=True)
 class IndexConfig:
+    """Index knobs.
+
+    ``backend`` selects the *search* structure over the stored vectors, not the
+    vectors themselves -- both backends are exact, and both read the same
+    persisted ``vectors.npy``. It is therefore not part of
+    ``index_fingerprint()``: switching backends re-uses the existing
+    embeddings instead of forcing a re-embed.
+    """
+
+    backend: str
     embedding: EmbeddingConfig
     faiss: FaissConfig
     bm25: BM25Config
 
     @classmethod
     def parse(cls, data: dict[str, Any]) -> IndexConfig:
-        _reject_unknown(data, ("embedding", "faiss", "bm25"), "index")
+        _reject_unknown(data, ("backend", "embedding", "faiss", "bm25"), "index")
+        backend = _take(data, "backend", str, "index")
+        if backend not in INDEX_BACKENDS:
+            raise ConfigError(f"index.backend: {backend!r} not in {sorted(INDEX_BACKENDS)}")
         return cls(
+            backend=backend,
             embedding=EmbeddingConfig.parse(_section(data, "embedding", path="index")),
             faiss=FaissConfig.parse(_section(data, "faiss", path="index")),
             bm25=BM25Config.parse(_section(data, "bm25", path="index")),
@@ -368,8 +416,31 @@ class PipelineConfig:
             "parser": self.ingest.parser,
             "chunking": asdict(self.ingest.chunking),
         }
-        blob = json.dumps(payload, sort_keys=True).encode("utf-8")
-        return hashlib.sha256(blob).hexdigest()[:10]
+        return _short_hash(payload)
+
+    def index_fingerprint(self) -> str:
+        """Short hash of the knobs that determine the stored vectors.
+
+        The ingest fingerprint is an *input* to this hash, so an index
+        directory is structurally bound to one chunking config: changing a
+        chunking knob changes the index fingerprint too, and the old index
+        cannot be mistaken for a current one. That is necessary but not
+        sufficient -- two chunk sets can share an ingest fingerprint (the
+        tokenizer *name* is hashed, not whether it resolved to the exact HF
+        tokenizer or the regex fallback), so the stored index metadata also
+        pins the chunk file's content hash. See ``index.store``.
+
+        Excluded on purpose: ``batch_size`` and ``device`` (they do not change
+        what a vector means), ``query_instruction`` (query-side only), and
+        ``backend``/``faiss.index_type`` (both backends are exact searches over
+        the same vectors, so they share one set of embeddings).
+        """
+        payload = {
+            "ingest": self.ingest_fingerprint(),
+            "model": self.index.embedding.model,
+            "normalize": self.index.embedding.normalize,
+        }
+        return _short_hash(payload)
 
 
 def load_config(path: Path | str = DEFAULT_CONFIG_PATH) -> PipelineConfig:

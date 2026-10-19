@@ -74,6 +74,24 @@ class Chunk:
             "page_start": self.page_start,
         }
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Chunk:
+        """Inverse of :meth:`to_dict`, for reading back ``chunks.jsonl``."""
+        return cls(
+            chunk_id=data["chunk_id"],
+            doc_id=data["doc_id"],
+            index=data["index"],
+            text=data["text"],
+            char_start=data["char_start"],
+            char_end=data["char_end"],
+            n_tokens=data["n_tokens"],
+            strategy=data["strategy"],
+            prefix=data.get("prefix", ""),
+            section_title=data.get("section_title", ""),
+            section_path=tuple(data.get("section_path") or ()),
+            page_start=data.get("page_start"),
+        )
+
 
 def chunk_id(doc_id: str, index: int) -> str:
     return f"{doc_id}#{index:04d}"

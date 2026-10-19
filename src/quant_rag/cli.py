@@ -6,6 +6,7 @@ import argparse
 import sys
 
 from quant_rag import __version__
+from quant_rag.index import run as index
 from quant_rag.ingest import download
 from quant_rag.ingest import run as ingest
 
@@ -27,6 +28,10 @@ def build_parser() -> argparse.ArgumentParser:
     ing = sub.add_parser("ingest", help="parse the corpus and build chunks")
     ingest.add_arguments(ing)
     ing.set_defaults(func=ingest.run)
+
+    idx = sub.add_parser("index", help="embed the active chunk set into a vector index")
+    index.add_arguments(idx)
+    idx.set_defaults(func=index.run)
 
     ask = sub.add_parser("ask", help="retrieve + answer a question over the corpus")
     ask.add_argument("question")
