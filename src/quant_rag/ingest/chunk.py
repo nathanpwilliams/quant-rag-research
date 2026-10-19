@@ -148,6 +148,34 @@ def _body_span(doc: ParsedDoc, section: Section) -> tuple[int, int]:
     return _trim(doc.text, start, section.char_end)
 
 
+def fit_to_budget(
+    tokenizer: Tokenizer, text: str, lo: int, hi: int, budget: int
+) -> tuple[int, int, int]:
+    """Shrink ``[lo, hi)`` until the *slice* tokenizes within ``budget``.
+
+    Windowing counts tokens in document context, but the embedder is handed the
+    isolated slice, and the two can disagree. A window that opens mid-word
+    carries a word fragment, and WordPiece splits a fragment into more pieces
+    standing alone than it contributed inside the whole word -- the tail of
+    "statistic" costs one token in context and two as a bare "istic". So a
+    510-token window can re-tokenize to 511 once cut out, and the encoder
+    silently drops the overflow off the end.
+
+    Measuring what will actually be embedded is the only way ``n_tokens`` can be
+    trusted, since it is recorded per chunk and read back by the eval. ``hi``
+    strictly decreases each pass, so this terminates; the loop exists because
+    re-trimming can shift the boundary again.
+    """
+    while True:
+        spans = tokenizer.spans(text[lo:hi])
+        if len(spans) <= budget:
+            return lo, hi, len(spans)
+        shrunk = lo + spans[budget - 1][1]
+        if shrunk >= hi:  # pragma: no cover - defensive; hi must decrease
+            return lo, hi, len(spans)
+        lo, hi = _trim(text, lo, shrunk)
+
+
 # --------------------------------------------------------------------------- #
 # fixed
 # --------------------------------------------------------------------------- #
@@ -171,6 +199,11 @@ class FixedChunker:
             lo, hi = _trim(doc.text, spans[first][0], spans[last - 1][1])
             if lo >= hi:
                 continue
+            lo, hi, n_tokens = fit_to_budget(
+                self.tokenizer, doc.text, lo, hi, self.chunk_tokens
+            )
+            if lo >= hi:
+                continue
             section = doc.section_at(lo)
             chunks.append(
                 Chunk(
@@ -180,7 +213,7 @@ class FixedChunker:
                     text=doc.text[lo:hi],
                     char_start=lo,
                     char_end=hi,
-                    n_tokens=last - first,
+                    n_tokens=n_tokens,
                     strategy=self.strategy,
                     section_title=section.title if section else "",
                     section_path=section.path if section else (),
@@ -306,6 +339,9 @@ class StructureChunker:
             lo, hi = _trim(
                 doc.text, unit.lo + spans[first][0], unit.lo + spans[last - 1][1]
             )
+            if lo >= hi:
+                continue
+            lo, hi, _ = fit_to_budget(self.tokenizer, doc.text, lo, hi, budget)
             if lo >= hi:
                 continue
             index = start_index + offset

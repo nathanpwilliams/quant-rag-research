@@ -24,9 +24,11 @@ def test_committed_config_parses():
 def test_chunking_knobs_come_from_the_file(raw):
     """The ablation depends on these being read, never defaulted in code."""
     chunking = PipelineConfig.parse(raw).ingest.chunking
+    # 510, not 512: the embedder's 512-token window counts [CLS] and [SEP], so
+    # 512 content tokens would be silently truncated. See README.
     assert (chunking.strategy, chunking.chunk_tokens, chunking.overlap_tokens) == (
         "fixed",
-        512,
+        510,
         64,
     )
 

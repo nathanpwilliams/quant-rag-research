@@ -6,11 +6,12 @@ from quant_rag.ingest.chunk import (
     StructureChunker,
     build_chunker,
     chunk_id,
+    fit_to_budget,
     window_indices,
 )
 from quant_rag.ingest.manifest import DEFAULT_RAW_DIR, iter_documents, load_manifest
 from quant_rag.ingest.parse import Element, ParsedDoc, parse_document, render
-from quant_rag.ingest.tokenizer import RegexTokenizer
+from quant_rag.ingest.tokenizer import RegexTokenizer, get_tokenizer
 
 TOKENIZER = RegexTokenizer()
 
@@ -327,3 +328,65 @@ def test_real_paper_chunks_support_locator_resolution(real_paper, strategy):
     if strategy == "structure":
         assert any(c.prefix for c in chunks)
         assert any("Abstract" in c.prefix for c in chunks)
+
+
+# --------------------------------------------------------------------------- #
+# fit_to_budget: n_tokens must describe the slice, not the document
+# --------------------------------------------------------------------------- #
+
+
+def test_fit_to_budget_is_a_noop_when_the_slice_already_fits():
+    text = words(20)
+    lo, hi, n = fit_to_budget(TOKENIZER, text, 0, len(text), 100)
+    assert (lo, hi) == (0, len(text))
+    assert n == TOKENIZER.count(text)
+
+
+def test_fit_to_budget_shrinks_an_oversized_slice_and_reports_the_real_count():
+    text = words(200)
+    lo, hi, n = fit_to_budget(TOKENIZER, text, 0, len(text), 50)
+    assert n <= 50
+    assert hi < len(text)
+    assert TOKENIZER.count(text[lo:hi]) == n
+    assert not text[hi - 1].isspace()
+
+
+def test_fit_to_budget_respects_a_nonzero_start_offset():
+    text = words(200)
+    start = text.index("w100")
+    lo, hi, n = fit_to_budget(TOKENIZER, text, start, len(text), 30)
+    assert lo == start
+    assert n <= 30
+    assert TOKENIZER.count(text[lo:hi]) == n
+
+
+@pytest.mark.parametrize("strategy", ["fixed", "structure"])
+def test_recorded_n_tokens_matches_a_recount_of_the_emitted_text(real_paper, strategy):
+    """The bug this guards: windowing counted tokens in document context, so a
+    chunk opening mid-word ("statistic" sliced to "istic") re-tokenized one
+    token longer than recorded and the encoder silently dropped its tail.
+
+    Uses the real BGE tokenizer, since WordPiece subword splitting is the whole
+    mechanism -- the regex fallback has no subwords and cannot show the drift.
+    """
+    tokenizer = get_tokenizer("BAAI/bge-base-en-v1.5")
+    if tokenizer.approximate:
+        pytest.skip("exact BGE tokenizer unavailable; drift needs WordPiece")
+
+    cfg = ChunkingConfig(
+        strategy=strategy,
+        chunk_tokens=510,
+        overlap_tokens=64,
+        tokenizer="BAAI/bge-base-en-v1.5",
+    )
+    chunks = build_chunker(cfg, tokenizer).chunk(real_paper)
+    assert chunks
+
+    for chunk in chunks:
+        recount = tokenizer.count(chunk.text)
+        assert recount == chunk.n_tokens, (
+            f"{chunk.chunk_id}: recorded {chunk.n_tokens} tokens, text "
+            f"recounts to {recount}"
+        )
+        # 510 content tokens + [CLS] + [SEP] is exactly the model's 512 window.
+        assert recount <= 510, f"{chunk.chunk_id} would be truncated by the encoder"

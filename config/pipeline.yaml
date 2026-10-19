@@ -14,7 +14,12 @@ ingest:
   parser: pymupdf              # pymupdf (flat text) | pymupdf4llm (structure-aware markdown)
   chunking:
     strategy: fixed            # fixed | structure
-    chunk_tokens: 512
+    # 510, not 512: the embedder's window (index.embedding.model -> 512) counts
+    # [CLS] and [SEP], so the content budget is 512 - 2. At 512 the encoder
+    # silently truncated 440/461 chunk tails -- doubly bad given BGE pools on
+    # CLS, which already underweights the tail. `quant-rag index` warns if this
+    # ever stops lining up.
+    chunk_tokens: 510
     overlap_tokens: 64
     tokenizer: BAAI/bge-base-en-v1.5   # count tokens with the embedder's tokenizer
 
