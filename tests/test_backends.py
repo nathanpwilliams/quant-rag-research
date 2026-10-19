@@ -26,8 +26,8 @@ def unit_vectors(n: int, dim: int, seed: int = 0) -> np.ndarray:
 
 @pytest.fixture
 def vectors() -> np.ndarray:
-    # Corpus-shaped: 461 chunks of 768 dims, as the real index.
-    return unit_vectors(461, 768)
+    # Corpus-shaped: ~460 chunks of 768 dims, as the real index.
+    return unit_vectors(459, 768)
 
 
 @pytest.fixture
@@ -100,7 +100,7 @@ def test_exact_numpy_rejects_non_2d_input():
 
 def test_exact_numpy_reports_shape(vectors):
     backend = ExactNumpyBackend(vectors)
-    assert backend.n_vectors == 461
+    assert backend.n_vectors == 459
     assert backend.dim == 768
     assert backend.name == "exact_numpy"
 
@@ -138,7 +138,7 @@ def test_the_two_backends_return_the_same_top_k(vectors, queries, faiss_backend)
 
 
 def test_faiss_backend_reports_the_same_shape(vectors, faiss_backend):
-    assert faiss_backend.n_vectors == 461
+    assert faiss_backend.n_vectors == 459
     assert faiss_backend.dim == 768
     assert faiss_backend.name == "faiss_flat_ip"
 

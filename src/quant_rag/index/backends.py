@@ -11,9 +11,9 @@ fingerprint.
 Why ``exact_numpy`` is the default, and not a workaround
 --------------------------------------------------------
 
-This corpus is 461 chunks of 768 float32 — a 1.4 MB matrix. A query is one
-``(1, 768) @ (768, 461)`` matmul: ~350k multiply-adds, microseconds under BLAS,
-with no index structure to build, tune, or persist. FAISS's value is
+This corpus is ~460 chunks of 768 float32 — a 1.4 MB matrix. A query is one
+``(1, 768) @ (768, n_chunks)`` matmul: ~350k multiply-adds, microseconds under
+BLAS, with no index structure to build, tune, or persist. FAISS's value is
 approximate search over millions of vectors; at this scale ``IndexFlatIP`` does
 exactly the same brute-force computation numpy does, just behind a native
 extension. So numpy is not a lesser substitute here — it is the same algorithm
@@ -102,8 +102,8 @@ class ExactNumpyBackend:
         scores = queries @ self.vectors.T
         # Stable sort on the negated scores: descending by score, and among
         # equal scores the lower row index first. argpartition would be faster
-        # asymptotically but is unstable, and at this size the full sort of 461
-        # values is already negligible.
+        # asymptotically but is unstable, and at a few hundred vectors the full
+        # sort is already negligible.
         rows = np.argsort(-scores, axis=1, kind="stable")[:, :width]
         return np.take_along_axis(scores, rows, axis=1), rows
 
@@ -157,7 +157,9 @@ BACKENDS = {
 }
 
 
-def build_backend(vectors: np.ndarray, backend: str, *, index_type: str = "flat_ip") -> SearchBackend:
+def build_backend(
+    vectors: np.ndarray, backend: str, *, index_type: str = "flat_ip"
+) -> SearchBackend:
     """Construct the backend named by ``index.backend``."""
     if backend == "exact_numpy":
         return ExactNumpyBackend(vectors)
