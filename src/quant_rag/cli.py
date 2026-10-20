@@ -6,6 +6,7 @@ import argparse
 import sys
 
 from quant_rag import __version__
+from quant_rag import eval_cli
 from quant_rag.index import run as index
 from quant_rag.ingest import download
 from quant_rag.ingest import run as ingest
@@ -37,6 +38,12 @@ def build_parser() -> argparse.ArgumentParser:
     ask = sub.add_parser("ask", help="retrieve chunks for a question (no generation yet)")
     ask_cmd.add_arguments(ask)
     ask.set_defaults(func=ask_cmd.run)
+
+    vgs = sub.add_parser(
+        "validate-golden-set", help="check the golden set's schema (read-only)"
+    )
+    eval_cli.add_arguments(vgs)
+    vgs.set_defaults(func=eval_cli.run)
 
     ev = sub.add_parser("eval", help="run the golden-set evaluation")
     ev.add_argument("--config", default="config/pipeline.yaml")

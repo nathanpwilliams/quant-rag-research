@@ -6,7 +6,7 @@ title-checked against the arXiv API), PyMuPDF parsing, and config-driven
 chunking (fixed and structure-aware), yielding 459 chunks with no parse-quality
 flags. Indexing and dense retrieval work end to end: BGE embeddings over the
 active chunk set, exact cosine search, and the `quant-rag index` / `quant-rag
-ask` commands, with 130 passing tests. Planned: a 4-row retrieval ablation
+ask` commands, with 172 passing tests. Planned: a 4-row retrieval ablation
 (recall@k, MRR, faithfulness) against a human-annotated golden set.
 
 Eval-centric RAG methodology study over a small RL / quant-finance paper corpus.
@@ -43,6 +43,32 @@ uv run quant-rag ask "What is the EIIE topology?"
 
 `ask` prints the top chunks with doc_id, chunk_id, score, and a preview. There is
 no answer generation yet.
+
+## Golden set
+
+`eval/golden_set.jsonl` is human-annotated by design and is never written by
+tooling (CLAUDE.md rule 1). The validator is read-only and checks three layers —
+JSONL/schema structure, cross-field coherence (an `answerable: true` row with no
+gold evidence has no recall@k to compute), and corpus cross-reference (gold
+`doc_id`s must name manifest documents, and locators must resolve to a chunk
+under the *active* chunking config):
+
+```bash
+uv run quant-rag validate-golden-set              # schema + corpus cross-reference
+uv run quant-rag validate-golden-set --strict     # warnings fail too
+uv run quant-rag validate-golden-set --require-locators   # for CI once filled in
+```
+
+Exit status is 0 only when there are no errors, so it works as a pre-commit or
+CI gate. Unfinished rows are marked with `TODO` placeholders and
+`status: needs_corpus_fill`; the two must agree, and `status: ready` with a
+`TODO` still in it is an error — that is the one mistake that puts a placeholder
+into a measured run.
+
+Locator resolution needs an ingested chunk set (gitignored), so it runs when one
+is present and is skipped with a note otherwise; `--require-locators` turns that
+skip into a failure so a green CI run cannot mean "the interesting half didn't
+run".
 
 ## Design decisions
 
