@@ -19,6 +19,10 @@ then RAGAS metrics.
 - data/raw/              — PDFs + manifest.json (PDFs gitignored; manifest committed)
 - data/processed/        — parsed markdown + metadata (gitignored)
 - src/quant_rag/         — ingest/ index/ retrieve/ generate/ pipeline.py
+- src/quant_rag/golden_set.py — golden-set schema validation (read-only; see rule 1).
+  Its `locator_matches` is the one piece run_eval.py shares, so validation and
+  scoring agree on what "this locator resolves" means.
+- src/quant_rag/eval_cli.py   — `quant-rag validate-golden-set` CLI
 - eval/                  — golden_set.jsonl, run_eval.py, results/ (results CSVs are committed)
 - tests/                 — pytest; chunking, fusion, parsing, locator-resolver
 
@@ -26,6 +30,10 @@ then RAGAS metrics.
 
 - `uv sync` — install deps
 - `uv run pytest` — run tests (run before every commit)
+- `uv run quant-rag validate-golden-set` — golden-set schema check (run before every
+  commit that touches `eval/golden_set.jsonl`; exits non-zero on error)
+- `uv run quant-rag ingest` — parse + chunk the corpus
+- `uv run quant-rag index` — embed the active chunk set
 - `uv run quant-rag ask "..."` — retrieval CLI
 - `uv run quant-rag eval --config config/pipeline.yaml` — full eval run
 
@@ -48,6 +56,11 @@ then RAGAS metrics.
 - Small, atomic commits; one logical change each. Conventional-commit style:
   `feat(ingest): ...`, `fix(retrieve): ...`, `test: ...`, `docs: ...`, `eval: ...`.
 - Run `uv run pytest` before committing; do not commit with failing tests.
+- Any commit touching `eval/golden_set.jsonl` must also pass
+  `uv run quant-rag validate-golden-set`. Both commands are designed as gates
+  (non-zero exit on failure), so CI should run `uv run pytest` and
+  `uv run quant-rag validate-golden-set --require-locators` — the flag matters,
+  or a green run can mean the locator half silently did not run.
 - Never use `git push --force`, never amend or rebase pushed commits, never commit
   directly to a tag.
 - Keep the tree clean: no stray scratch files, no `*_old.py`, no commented-out corpses.

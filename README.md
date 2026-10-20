@@ -70,6 +70,10 @@ is present and is skipped with a note otherwise; `--require-locators` turns that
 skip into a failure so a green CI run cannot mean "the interesting half didn't
 run".
 
+`locator_matches` is the one piece `eval/run_eval.py` shares with the validator,
+so validation and scoring agree on what "this locator resolves" means — a
+locator that validates must never fail to resolve at scoring time.
+
 ## Design decisions
 
 **`exact_numpy` is the default search backend, not FAISS.** The corpus is 459

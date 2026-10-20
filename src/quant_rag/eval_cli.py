@@ -25,10 +25,8 @@ from quant_rag.ingest.manifest import iter_documents, load_manifest
 def resolve_golden_set(config, explicit: Path | None) -> tuple[Path | None, str]:
     """Find the golden set, preferring an explicit path over the config's.
 
-    The config names ``eval/golden_set.jsonl``, which is the filled-in file
-    that does not exist yet; the committed template is
-    ``eval/golden_set_seed.jsonl``. Rather than quietly validating whichever
-    one happens to be there, say which one was used.
+    Always names the file it used, so a validation pass can never be mistaken
+    for having checked a different file than it did.
     """
     if explicit is not None:
         return (explicit if explicit.exists() else None), str(explicit)
@@ -36,13 +34,6 @@ def resolve_golden_set(config, explicit: Path | None) -> tuple[Path | None, str]
     configured = config.resolve(config.eval.golden_set)
     if configured.exists():
         return configured, f"{configured} (from eval.golden_set)"
-
-    seed = configured.with_name(configured.stem + "_seed" + configured.suffix)
-    if seed.exists():
-        return seed, (
-            f"{seed} (fallback: eval.golden_set points at {configured.name}, "
-            "which does not exist yet)"
-        )
     return None, str(configured)
 
 

@@ -36,11 +36,10 @@ since it is the harmless half and may just be an edit in progress.
 Boundary with ``eval/run_eval.py``
 ----------------------------------
 
-``locator_matches`` answers a validation question -- "is this annotation usable
-at all?" -- and is deliberately simple. The authoritative locator resolver used
-for *scoring* belongs to the eval's metric logic, which is the owner's to write
-(CLAUDE.md division of labor). If ``run_eval.py`` wants to reuse this matching,
-it should do so explicitly rather than by accident.
+Metric logic belongs to the owner (CLAUDE.md division of labor), so nothing
+here scores anything. One piece is shared on purpose: ``run_eval.py``'s
+authoritative resolver imports :func:`locator_matches`, so validation and
+scoring agree on what "this locator resolves" means. See that function.
 """
 
 from __future__ import annotations
@@ -181,6 +180,14 @@ def locator_matches(locator: str, chunk_bodies: dict[str, str]) -> list[str]:
     Matches against the chunk *body*, not its text: the structure chunker
     prepends a heading breadcrumb that is not document content, and a locator
     is a phrase quoted from the document.
+
+    **Shared with scoring, by decision.** When the authoritative locator
+    resolver lands in ``eval/run_eval.py``, it imports this function rather
+    than reimplementing the match, so validation and scoring have one matching
+    semantics: a locator that validates here must never fail to resolve at
+    scoring time. The two drifting apart would be the worst kind of bug in
+    this repo -- a green validator and a silent zero in the results CSV. So
+    any change to the matching rule changes both at once, on purpose.
     """
     needle = normalize_for_match(locator)
     if not needle:

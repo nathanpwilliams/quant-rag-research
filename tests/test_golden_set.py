@@ -497,7 +497,7 @@ def test_the_committed_golden_set_is_schema_valid():
     """
     from quant_rag.ingest.manifest import iter_documents, load_manifest
 
-    path = REPO_ROOT / "eval" / "golden_set_seed.jsonl"
+    path = REPO_ROOT / "eval" / "golden_set.jsonl"
     if not path.exists():  # pragma: no cover - the file is committed
         pytest.skip(f"{path} not found")
 
@@ -516,7 +516,7 @@ def test_the_committed_golden_sets_locators_resolve_under_the_active_config():
     from quant_rag.index.store import chunks_path, load_chunks
     from quant_rag.ingest.manifest import iter_documents, load_manifest
 
-    path = REPO_ROOT / "eval" / "golden_set_seed.jsonl"
+    path = REPO_ROOT / "eval" / "golden_set.jsonl"
     config = load_config(REPO_ROOT / "config" / "pipeline.yaml")
     try:
         chunks = load_chunks(chunks_path(config))
